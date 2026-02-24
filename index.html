@@ -1,87 +1,175 @@
-    <!DOCTYPE html>
+
+            
+       <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Whop AI Clipper Pro</title>
+    <title>Whop AI Reels Clipper Pro</title>
     <style>
-        :root { --primary: #38bdf8; --bg: #020617; --card: rgba(30, 41, 59, 0.7); }
-        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
-        
-        /* Glassmorphism Dashboard */
-        .dashboard { background: var(--card); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); padding: 40px; border-radius: 24px; width: 100%; max-width: 600px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-        
-        h1 { font-weight: 800; letter-spacing: -1px; background: linear-gradient(to right, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        /* Style Selector */
-        .style-picker { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
-        .style-btn { padding: 8px 16px; border-radius: 20px; border: 1px solid #334155; background: #0f172a; color: #94a3b8; cursor: pointer; font-size: 0.8rem; transition: 0.3s; }
-        .style-btn.active { background: var(--primary); color: #020617; border-color: var(--primary); font-weight: bold; }
+        :root { 
+            --primary: #38bdf8; 
+            --accent: #ff0050; 
+            --bg: #020617; 
+            --card: rgba(15, 23, 42, 0.9); 
+        }
 
-        .upload-zone { border: 2px dashed #334155; border-radius: 16px; padding: 40px; margin: 20px 0; transition: 0.3s; }
-        .upload-zone:hover { border-color: var(--primary); background: rgba(56, 189, 248, 0.05); }
+        body { 
+            background: var(--bg); 
+            color: white; 
+            font-family: 'Inter', sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 20px;
+            margin: 0; 
+        }
 
-        .main-btn { background: var(--primary); color: #020617; border: none; padding: 16px 32px; border-radius: 12px; font-weight: 800; cursor: pointer; box-shadow: 0 0 20px rgba(56, 189, 248, 0.3); transition: 0.3s; }
-        .main-btn:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(56, 189, 248, 0.5); }
+        .dashboard { 
+            background: var(--card); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            padding: 30px; 
+            border-radius: 28px; 
+            width: 90%; 
+            max-width: 450px; 
+            text-align: center; 
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7); 
+        }
 
-        video { width: 100%; border-radius: 12px; margin-top: 20px; display: none; border: 1px solid #334155; }
+        /* API Key Section */
+        .key-input {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid #334155;
+            padding: 12px;
+            border-radius: 12px;
+            width: 100%;
+            color: white;
+            margin-bottom: 20px;
+            font-size: 0.8rem;
+            box-sizing: border-box;
+        }
+
+        .upload-zone {
+            border: 2px dashed #334155;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .main-btn { 
+            background: var(--primary); 
+            color: #020617; 
+            border: none; 
+            padding: 16px; 
+            border-radius: 14px; 
+            font-weight: 800; 
+            cursor: pointer; 
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        .main-btn:hover { transform: scale(1.02); background: #7dd3fc; }
+
+        /* PREVIEW - FORCED 9:16 */
+        #preview-container { 
+            width: 260px; 
+            height: 462px; 
+            margin: 25px auto 0;
+            display: none; 
+            border: 3px solid var(--primary);
+            border-radius: 20px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        video { width: 100%; height: 100%; object-fit: cover; }
+
+        #status { margin-top: 15px; font-weight: bold; color: var(--primary); font-size: 0.8rem; }
+        
+        .download-btn { 
+            display: block; 
+            margin-top: 20px; 
+            color: #fff; 
+            background: var(--accent); 
+            padding: 14px; 
+            border-radius: 12px; 
+            text-decoration: none; 
+            font-weight: bold; 
+        }
     </style>
 </head>
 <body>
+
     <div class="dashboard">
         <h1>CLIPPER PRO</h1>
-        <p style="color: #94a3b8;">Transform long videos into viral shorts instantly.</p>
         
-        <div class="style-picker">
-            <button class="style-btn active" onclick="setStyle('yellow', this)">Neon Yellow</button>
-            <button class="style-btn" onclick="setStyle('white', this)">Classic White</button>
-            <button class="style-btn" onclick="setStyle('red', this)">Bold Red</button>
-        </div>
-
+        <input type="password" id="gemini-key" class="key-input" placeholder="AIzaSyDapDi-vNZnCgf-CdFx5x-P_oWfE93FEUk">
+        
+        <p style="color: #94a3b8; font-size: 0.8rem;">Step 1: Paste Key | Step 2: Upload Video</p>
+        
         <div class="upload-zone">
-            <button id="upload_widget" class="main-btn">UPLOAD NEW VIDEO</button>
+            <button id="upload_widget" class="main-btn">UPLOAD LONG VIDEO</button>
         </div>
 
         <div id="status"></div>
-        <video id="preview" controls></video>
+        
+        <div id="preview-container">
+            <video id="preview" controls autoplay muted loop></video>
+        </div>
+        
         <div id="download-area"></div>
     </div>
 
     <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
     <script>
-        let currentStyle = 'roboto_24_bold_yellow';
-
-        function setStyle(style, btn) {
-            document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            if(style === 'yellow') currentStyle = 'roboto_24_bold_yellow';
-            if(style === 'white') currentStyle = 'arial_20_bold_white';
-            if(style === 'red') currentStyle = 'verdana_28_bold_red';
-        }
+        // 1. Check if Gemini Key exists before allowing upload
+        document.getElementById("upload_widget").addEventListener("click", () => {
+            const key = document.getElementById('gemini-key').value;
+            if(!key) {
+                alert("Please paste your Gemini API Key first!");
+                return;
+            }
+            myWidget.open();
+        });
 
         var myWidget = cloudinary.createUploadWidget({
             cloudName: 'dozlfqmtj', 
-            uploadPreset: 'whop_clipper'
+            uploadPreset: 'whop_clipper',
+            clientAllowedFormats: ["mp4", "mov"]
         }, (error, result) => { 
             if (!error && result && result.event === "success") { 
-                document.getElementById('status').innerText = "✨ AI is analyzing audio...";
+                document.getElementById('status').innerText = "🤖 Analyzing Video with AI...";
                 const originalUrl = result.info.secure_url;
                 
-                // Construct Advanced AI Link
-                const transform = `c_fill,g_auto,ar_9:16,so_0,eo_30/fn_captions:google:en-US:${currentStyle}/`;
+                // TRANSFORMATION SETTINGS
+                // c_fill,g_auto:face -> Keeps face in center
+                // fn_captions:google -> Triggers AI speech-to-text
+                // b_rgb:000000 -> Adds black background if ratio is weird
+                const transform = "c_fill,g_auto:face,ar_9:16,so_0,eo_30/fn_captions:google:en-US:roboto_28_bold_yellow/fl_attachment/";
                 const clipUrl = originalUrl.replace("/upload/", `/upload/${transform}`);
                 
-                setTimeout(() => {
-                    document.getElementById('status').innerText = "✅ Clip Ready!";
-                    const vid = document.getElementById('preview');
-                    vid.src = clipUrl;
-                    vid.style.display = 'block';
-                    document.getElementById('download-area').innerHTML = `<a href="${clipUrl}" download style="color:var(--primary); text-decoration:none; font-weight:bold; display:block; margin-top:15px;">📥 DOWNLOAD CLIP</a>`;
-                }, 3000);
+                // Wait for Cloudinary/Google AI to finish transcription
+                let count = 10;
+                const timer = setInterval(() => {
+                    count--;
+                    document.getElementById('status').innerText = `✨ AI is writing subtitles... ${count}s`;
+                    if(count <= 0) {
+                        clearInterval(timer);
+                        showResult(clipUrl);
+                    }
+                }, 1000);
             }
         });
 
-        document.getElementById("upload_widget").addEventListener("click", () => myWidget.open());
+        function showResult(url) {
+            document.getElementById('status').innerText = "🔥 REEL READY!";
+            document.getElementById('preview-container').style.display = 'block';
+            document.getElementById('preview').src = url;
+            document.getElementById('download-area').innerHTML = `
+                <a href="${url}" class="download-btn">📥 DOWNLOAD FOR INSTAGRAM</a>
+            `;
+        }
     </script>
 </body>
 </html>
