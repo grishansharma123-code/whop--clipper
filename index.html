@@ -1,175 +1,62 @@
+AIzaSyDapDi-vNZnCgf-CdFx5x-P_oWfE93FEUk
 
+
+
+
+<script>
+    // 1. Check for Key before opening
+    document.getElementById("upload_widget").addEventListener("click", () => {
+        const key = document.getElementById('gemini-key').value;
+        if(!key || key === "AIzaSyDapDi-vNZnCgf-CdFx5x-P_oWfE93FEUk") {
+            alert("Please paste your real Gemini API Key first!");
+            return;
+        }
+        myWidget.open();
+    });
+
+    var myWidget = cloudinary.createUploadWidget({
+        cloudName: 'dozlfqmtj', 
+        uploadPreset: 'whop_clipper',
+        clientAllowedFormats: ["mp4", "mov"],
+        // IMPORTANT: This tells the cloud to start the AI subtitles immediately
+        raw_convert: 'google_speech' 
+    }, (error, result) => { 
+        if (!error && result && result.event === "success") { 
+            document.getElementById('status').innerText = "🤖 AI is analyzing & transcribing...";
+            const originalUrl = result.info.secure_url;
             
-       <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Whop AI Reels Clipper Pro</title>
-    <style>
-        :root { 
-            --primary: #38bdf8; 
-            --accent: #ff0050; 
-            --bg: #020617; 
-            --card: rgba(15, 23, 42, 0.9); 
+            // MASTER TRANSFORMATION
+            // c_fill,g_auto:face = Smart vertical crop
+            // fn_captions = AI Subtitles
+            // fl_attachment = Forces Download
+            const transform = "c_fill,g_auto:face,ar_9:16,so_0,eo_30/fn_captions:google:en-US:roboto_28_bold_yellow/fl_attachment/";
+            const clipUrl = originalUrl.replace("/upload/", `/upload/${transform}`);
+            
+            // Increased to 15 seconds because AI Transcription takes time
+            let count = 15;
+            const timer = setInterval(() => {
+                count--;
+                document.getElementById('status').innerText = `✨ AI is writing subtitles... ${count}s`;
+                if(count <= 0) {
+                    clearInterval(timer);
+                    showResult(clipUrl);
+                }
+            }, 1000);
         }
+    });
 
-        body { 
-            background: var(--bg); 
-            color: white; 
-            font-family: 'Inter', sans-serif; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding: 20px;
-            margin: 0; 
-        }
-
-        .dashboard { 
-            background: var(--card); 
-            backdrop-filter: blur(20px); 
-            border: 1px solid rgba(255,255,255,0.1); 
-            padding: 30px; 
-            border-radius: 28px; 
-            width: 90%; 
-            max-width: 450px; 
-            text-align: center; 
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7); 
-        }
-
-        /* API Key Section */
-        .key-input {
-            background: rgba(0,0,0,0.3);
-            border: 1px solid #334155;
-            padding: 12px;
-            border-radius: 12px;
-            width: 100%;
-            color: white;
-            margin-bottom: 20px;
-            font-size: 0.8rem;
-            box-sizing: border-box;
-        }
-
-        .upload-zone {
-            border: 2px dashed #334155;
-            border-radius: 20px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-
-        .main-btn { 
-            background: var(--primary); 
-            color: #020617; 
-            border: none; 
-            padding: 16px; 
-            border-radius: 14px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            width: 100%;
-            transition: 0.3s;
-        }
-
-        .main-btn:hover { transform: scale(1.02); background: #7dd3fc; }
-
-        /* PREVIEW - FORCED 9:16 */
-        #preview-container { 
-            width: 260px; 
-            height: 462px; 
-            margin: 25px auto 0;
-            display: none; 
-            border: 3px solid var(--primary);
-            border-radius: 20px;
-            overflow: hidden;
-            background: #000;
-        }
-
-        video { width: 100%; height: 100%; object-fit: cover; }
-
-        #status { margin-top: 15px; font-weight: bold; color: var(--primary); font-size: 0.8rem; }
+    function showResult(url) {
+        document.getElementById('status').innerText = "🔥 REEL READY!";
+        document.getElementById('preview-container').style.display = 'block';
         
-        .download-btn { 
-            display: block; 
-            margin-top: 20px; 
-            color: #fff; 
-            background: var(--accent); 
-            padding: 14px; 
-            border-radius: 12px; 
-            text-decoration: none; 
-            font-weight: bold; 
-        }
-    </style>
-</head>
-<body>
+        const vid = document.getElementById('preview');
+        vid.src = url;
+        // This ensures the video plays immediately
+        vid.load();
+        vid.play();
 
-    <div class="dashboard">
-        <h1>CLIPPER PRO</h1>
-        
-        <input type="password" id="gemini-key" class="key-input" placeholder="AIzaSyDapDi-vNZnCgf-CdFx5x-P_oWfE93FEUk">
-        
-        <p style="color: #94a3b8; font-size: 0.8rem;">Step 1: Paste Key | Step 2: Upload Video</p>
-        
-        <div class="upload-zone">
-            <button id="upload_widget" class="main-btn">UPLOAD LONG VIDEO</button>
-        </div>
-
-        <div id="status"></div>
-        
-        <div id="preview-container">
-            <video id="preview" controls autoplay muted loop></video>
-        </div>
-        
-        <div id="download-area"></div>
-    </div>
-
-    <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
-    <script>
-        // 1. Check if Gemini Key exists before allowing upload
-        document.getElementById("upload_widget").addEventListener("click", () => {
-            const key = document.getElementById('gemini-key').value;
-            if(!key) {
-                alert("Please paste your Gemini API Key first!");
-                return;
-            }
-            myWidget.open();
-        });
-
-        var myWidget = cloudinary.createUploadWidget({
-            cloudName: 'dozlfqmtj', 
-            uploadPreset: 'whop_clipper',
-            clientAllowedFormats: ["mp4", "mov"]
-        }, (error, result) => { 
-            if (!error && result && result.event === "success") { 
-                document.getElementById('status').innerText = "🤖 Analyzing Video with AI...";
-                const originalUrl = result.info.secure_url;
-                
-                // TRANSFORMATION SETTINGS
-                // c_fill,g_auto:face -> Keeps face in center
-                // fn_captions:google -> Triggers AI speech-to-text
-                // b_rgb:000000 -> Adds black background if ratio is weird
-                const transform = "c_fill,g_auto:face,ar_9:16,so_0,eo_30/fn_captions:google:en-US:roboto_28_bold_yellow/fl_attachment/";
-                const clipUrl = originalUrl.replace("/upload/", `/upload/${transform}`);
-                
-                // Wait for Cloudinary/Google AI to finish transcription
-                let count = 10;
-                const timer = setInterval(() => {
-                    count--;
-                    document.getElementById('status').innerText = `✨ AI is writing subtitles... ${count}s`;
-                    if(count <= 0) {
-                        clearInterval(timer);
-                        showResult(clipUrl);
-                    }
-                }, 1000);
-            }
-        });
-
-        function showResult(url) {
-            document.getElementById('status').innerText = "🔥 REEL READY!";
-            document.getElementById('preview-container').style.display = 'block';
-            document.getElementById('preview').src = url;
-            document.getElementById('download-area').innerHTML = `
-                <a href="${url}" class="download-btn">📥 DOWNLOAD FOR INSTAGRAM</a>
-            `;
-        }
-    </script>
-</body>
-</html>
+        document.getElementById('download-area').innerHTML = `
+            <a href="${url}" class="download-btn" download>📥 DOWNLOAD FOR INSTAGRAM</a>
+        `;
+    }
+</script>
