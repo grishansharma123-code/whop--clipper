@@ -27,7 +27,7 @@
                 console.log('Upload successful!');
                 // This magic link crops the video to 9:16 vertical and takes the first 30 seconds
                 const originalUrl = result.info.secure_url;
-                const clipUrl = originalUrl.replace("/upload/", "/upload/c_fill,g_auto,ar_9:16,so_0,eo_30/");
+               const clipUrl = originalUrl.replace("/upload/", "/upload/c_fill,g_auto,ar_9:16,so_0,eo_30/fn_captions:google:en-US:roboto_24_bold_yellow/");
                 
                 document.getElementById('results').innerHTML = `
                     <p>✅ Success!</p>
